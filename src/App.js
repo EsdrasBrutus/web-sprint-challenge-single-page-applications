@@ -8,28 +8,49 @@ import Confirm from './components/Confirm'
 
 import * as yup from 'yup'
 
+
+
+const initialFormValues = {
+  
+  name: '',
+
+  size: '',
+
+  specialInstr: '',
+
+  //Topings
+  pepperoni: false,
+  onions: false,
+  sausage: false,
+  mushrooms: false,
+}
+
+
+const initialFormErrors = {
+  name: '',
+}
 const App = () => {
 
-  const initialFormValues = {
-  
-    name: '',
-  
-    size: '',
+ const initialOrder= []
+ const initialDisabled = true
 
-    specialInstr: '',
+  const [order, setOrder] = useState(initialOrder)
+  const [formValues, setFormValues] = useState(initialFormValues) 
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
+  const [disabled, setDisabled] = useState(initialDisabled)
   
-    //Topings
-    pepperoni: false,
-    onions: false,
-    sausage: false,
-    mushrooms: false,
+  const postNewOrder = newOrder => {
+  
+    axios.post('https://reqres.in/api/users', newOrder)
+      .then(res => {
+        setOrder([res.data, ...order])
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      setFormValues(initialFormValues)
   }
-  
 
-  const initialFormErrors = {
-    name: '',
-  }
-  
   const inputChange = (name, value) => {
     yup.reach(formSchema, name)
       .validate(value)
@@ -57,13 +78,19 @@ const App = () => {
       mushrooms: formValues.mushrooms,
     
     }
-      setOrder(newOrder)
+      postNewOrder(newOrder)
   }
 
+  useEffect(() => {
+    formSchema.isValid(formValues)
+    .then(valid => setDisabled(!valid))
+  }, [formValues])
 
-  const [order, setOrder] = useState({})
-  const [formValues, setFormValues] = useState(initialFormValues) 
-  const [formErrors, setFormErrors] = useState(initialFormErrors)
+  useEffect(()=>{
+    console.log(order)
+  },[order])
+
+ 
 
   return (
     <div>
@@ -75,6 +102,7 @@ const App = () => {
         <Route exact path='/'>
           <Link to='/pizza'><button>Start your Order</button></Link>
         </Route>
+
         <Route path='/pizza'>
           <Form 
 
@@ -82,11 +110,12 @@ const App = () => {
             change={inputChange}
             submit={formSubmit}
             errors={formErrors}
+            disabled={disabled}
           />
         </Route>
 
         <Route path='/confirm'>
-          <Confirm order={order}/>
+          <Confirm order={ order }/>
         </Route>
       </div>
     </div>

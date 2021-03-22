@@ -9,6 +9,7 @@ const Form = (props) =>{
         submit,
         change,
         errors,
+        disabled,
       } = props
 
       const onSubmit = evt => {
@@ -31,7 +32,7 @@ const Form = (props) =>{
             <form className='form container' onSubmit={onSubmit}>
             <h2>Customize your Pizza</h2>
                 <div className='errors'>
-                    {/* <div>{errors.name}</div> */}
+                    <div>{errors.name}</div>
                 </div>
                 <div>
                     <h3>Name</h3>
@@ -110,8 +111,10 @@ const Form = (props) =>{
                         name='specialInstr' 
                         type='text' />
                 </label>
-                <Link to='/confirm'>
-                    <button>Submit Order</button>
+                
+                <button disabled={disabled}>Submit Order</button>
+                <Link to= '/confirm'>
+                    
                 </Link>
                 
             </form>
